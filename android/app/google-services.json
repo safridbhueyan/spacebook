@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "762603859786",
+    "project_id": "spacebook-5f724",
+    "storage_bucket": "spacebook-5f724.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762603859786:android:3a9916dda846bd0e195bb3",
+        "android_client_info": {
+          "package_name": "com.example.spacebook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAaT1ze4S3FfLnL2mtUgXeJlkN7jAPOAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
