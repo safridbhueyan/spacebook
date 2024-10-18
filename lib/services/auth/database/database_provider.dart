@@ -29,4 +29,7 @@ class DatabaseProvider extends ChangeNotifier {
 // USER PROFILE
   //get user profile given uid
   Future<UserProfile?> userProfile(String uid) => _db.getUserFromFirebase(uid);
+
+  //update the user bio
+  Future<void> updateBio(String bio) => _db.updateUserBioInFirebase(bio);
 }
