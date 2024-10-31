@@ -7,7 +7,7 @@ THIS IS WHAT EVERY POST SHOULD HAVE
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class post {
+class Post {
   final String id; //id of the post
   final String uid; //user id of poster
   final String name; // name of the poster
@@ -16,7 +16,7 @@ class post {
   final Timestamp timestamp; //timeStamp of the post
   int likeCount; //like count of the post
   final List<String> likedBy; //list of User IDs that the post were liked by
-  post({
+  Post({
     required this.id,
     required this.uid,
     required this.name,
@@ -27,8 +27,8 @@ class post {
     required this.timestamp,
   });
   //convert a firestore document to a post object (to use it in our app)
-  factory post.fromDocument(DocumentSnapshot doc) {
-    return post(
+  factory Post.fromDocument(DocumentSnapshot doc) {
+    return Post(
       id: doc.id,
       uid: doc['uid'],
       name: doc['name'],

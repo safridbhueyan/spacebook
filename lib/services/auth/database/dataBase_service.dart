@@ -18,6 +18,7 @@ this class handles all the data from and to firebase
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:space_book/models/post_Models.dart';
 import 'package:space_book/models/user.dart';
 import 'package:space_book/services/auth/auth_service.dart';
 // import 'package:space_book/services/auth/auth_service.dart';
@@ -75,4 +76,41 @@ THEIR DETAILS IN DATABASE TO DISPLAY ON THEIR PROFILE PAGE
       print(e);
     }
   }
+
+//POST
+
+//post a message
+  Future<void> postMessageInFirebase(String message) async {
+    try {
+      //get current user id
+      String uid = _auth.currentUser!.uid;
+      //use this uid to get the users profile
+      UserProfile? user = await getUserFromFirebase(uid);
+
+      //create a new post
+
+      Post newPost = Post(
+        id: '', //firebase auto generate this
+        uid: uid,
+        name: user!.name,
+        username: user.username,
+        message: message,
+        likeCount: 0,
+        likedBy: [],
+        timestamp: Timestamp.now(),
+      );
+
+      //convert this post object to map
+      Map<String, dynamic> newPostMap = newPost.toMap();
+
+      //add  map to fire store
+      await _db.collection("Posts").add(newPostMap);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+//Delete a post
+//get all the post from firebase
+//get individual post
 }

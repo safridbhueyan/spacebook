@@ -13,6 +13,7 @@ This provider is to seperate firestore data handling and ui ofour app
 */
 
 import 'package:flutter/material.dart';
+import 'package:space_book/models/post_Models.dart';
 import 'package:space_book/models/user.dart';
 import 'package:space_book/services/auth/auth_service.dart';
 import 'package:space_book/services/auth/database/dataBase_service.dart';
@@ -32,4 +33,20 @@ class DatabaseProvider extends ChangeNotifier {
 
   //update the user bio
   Future<void> updateBio(String bio) => _db.updateUserBioInFirebase(bio);
+
+  //post
+
+  //local lists of posts
+
+  List<Post> _allPosts = [];
+
+  //get posts
+  List<Post> get allPosts => _allPosts;
+
+  //post message
+  Future<void> postMessage(String message) async {
+    //post massge in firebase
+    await _db.postMessageInFirebase(message);
+  }
+  //fetch all post
 }
