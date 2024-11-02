@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:space_book/components/input_alert_box.dart';
 import 'package:space_book/components/my_bioBox.dart';
+import 'package:space_book/components/my_post_tile.dart';
+import 'package:space_book/helpers/navigate_pages.dart';
 import 'package:space_book/models/user.dart';
 import 'package:space_book/services/auth/auth_service.dart';
 import 'package:space_book/services/auth/database/database_provider.dart';
@@ -26,6 +28,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+//listening provider
+  late final listeningProvider = Provider.of<DatabaseProvider>(context);
+
 //text controller for bio
   final bioTextController = TextEditingController();
 
@@ -87,6 +92,9 @@ class _ProfilePageState extends State<ProfilePage> {
 //build ui
   @override
   Widget build(BuildContext context) {
+    //get user post
+
+    final allUserPosts = listeningProvider.filterUserPosts(widget.uid);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -96,43 +104,43 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 25),
-        child: ListView(
-          children: [
-            //USerName handle
-            Center(
-              child: Text(
-                _isLoading ? '' : '@${user!.username}',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.inversePrimary),
+      body: ListView(
+        children: [
+          //USerName handle
+          Center(
+            child: Text(
+              _isLoading ? '' : '@${user!.username}',
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.inversePrimary),
+            ),
+          ),
+          SizedBox(
+            height: 25,
+          ),
+          //profile picture
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(25)),
+              padding: EdgeInsets.all(25),
+              child: Icon(
+                Icons.person,
+                size: 72,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            SizedBox(
-              height: 25,
-            ),
-            //profile picture
-            Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(25)),
-                padding: EdgeInsets.all(25),
-                child: Icon(
-                  Icons.person,
-                  size: 72,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            //profile stats-> number of post, followers, following
-            //follow/unfollow
-            //bio box
-            //edit the bio
-            Row(
+          ),
+          SizedBox(
+            height: 25,
+          ),
+          //profile stats-> number of post, followers, following
+          //follow/unfollow
+          //bio box
+          //edit the bio
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -149,10 +157,42 @@ class _ProfilePageState extends State<ProfilePage> {
                     )),
               ],
             ),
-            MyBiobox(text: _isLoading ? '.....' : user!.bio),
-            //list of post from user
-          ],
-        ),
+          ),
+          MyBiobox(text: _isLoading ? '.....' : user!.bio),
+          Padding(
+            padding: EdgeInsets.only(left: 25.0, top: 25),
+            child: Text(
+              "Posts",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+
+          //list of post from user
+          allUserPosts.isEmpty
+              ?
+              //user post is empty
+              Center(
+                  child: Text("No post to display...."),
+                )
+              :
+              //user post is not empty
+              ListView.builder(
+                  itemCount: allUserPosts.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    //get individual post
+                    final post = allUserPosts[index];
+                    //post tile ui
+                    return MyPostTile(
+                      post: post,
+                      onPostTap: () => goPostPage(context, post),
+                      onUSerTap: () {},
+                    );
+                  })
+        ],
       ),
     );
   }

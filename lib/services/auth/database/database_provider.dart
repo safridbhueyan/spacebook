@@ -61,4 +61,10 @@ class DatabaseProvider extends ChangeNotifier {
     //update UI
     notifyListeners();
   }
+
+//filter & return the post given UID
+
+  List<Post> filterUserPosts(String uid) {
+    return _allPosts.where((post) => post.uid == uid).toList();
+  }
 }

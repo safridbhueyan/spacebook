@@ -15,11 +15,15 @@ class MyBiobox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      //padding outside
+      margin: EdgeInsets.symmetric(horizontal: 25),
+
+      //padding inside
+      padding: EdgeInsets.all(25),
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(12)),
-//padding inside
-      padding: EdgeInsets.all(25),
+
       child: Text(
         text,
         style: TextStyle(

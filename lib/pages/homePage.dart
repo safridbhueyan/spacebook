@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:space_book/components/drawer.dart';
 import 'package:space_book/components/input_alert_box.dart';
 import 'package:space_book/components/my_post_tile.dart';
+import 'package:space_book/helpers/navigate_pages.dart';
 import 'package:space_book/models/post_Models.dart';
 import 'package:space_book/services/auth/database/database_provider.dart';
 
@@ -90,7 +91,11 @@ class _HomepageState extends State<Homepage> {
               //get each individual posts
               final post = posts[index];
               //return as post tile ui
-              return MyPostTile(post: post);
+              return MyPostTile(
+                post: post,
+                onUSerTap: () => goUserPage(context, post.uid),
+                onPostTap: () => goPostPage(context, post),
+              );
             },
           );
   }
