@@ -112,5 +112,22 @@ THEIR DETAILS IN DATABASE TO DISPLAY ON THEIR PROFILE PAGE
 
 //Delete a post
 //get all the post from firebase
+
+  Future<List<Post>> getAllPostFromFirebase() async {
+    try {
+      QuerySnapshot snapshot = await _db
+          //go to collection -> posts
+          .collection("Posts")
+          //chronological order
+          .orderBy('timestamp', descending: true)
+          //get this data
+          .get();
+
+      //return as a list of post
+      return snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
 //get individual post
 }
