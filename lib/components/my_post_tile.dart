@@ -11,8 +11,11 @@ TO USE THIS WIDGET , WE NEED
 */
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 // import 'package:space_book/helpers/navigate_pages.dart';
 import 'package:space_book/models/post_Models.dart';
+import 'package:space_book/services/auth/auth_service.dart';
+import 'package:space_book/services/auth/database/database_provider.dart';
 
 class MyPostTile extends StatefulWidget {
   final Post post;
@@ -30,6 +33,78 @@ class MyPostTile extends StatefulWidget {
 }
 
 class _MyPostTileState extends State<MyPostTile> {
+  //provider
+  late final databaseProvider =
+      Provider.of<DatabaseProvider>(context, listen: false);
+  late final listeningProvider = Provider.of<DatabaseProvider>(context);
+//show options for post
+  void _showOption() {
+    //check if this post is owned by the user or not
+    String currentUid = AuthService().getCurrentUid();
+
+    final bool isOwnPost = widget.post.uid == currentUid;
+
+    // Create a list for user-specific options
+    List<Widget> options = isOwnPost
+        ? [
+            // Delete option if it's the user's own post
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text("Delete"),
+              onTap: () async {
+                //pop the option box
+                Navigator.pop(context);
+
+                //do the delete action
+
+                await databaseProvider.deletePost(widget.post.id);
+              },
+            ),
+          ]
+        : [
+            // Report and Block options if it's someone else's post
+            ListTile(
+              leading: Icon(Icons.flag),
+              title: Text("Report"),
+              onTap: () {
+                //pop the option box
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.block),
+              title: Text("Block User"),
+              onTap: () {
+                //pop the option box
+                Navigator.pop(context);
+              },
+            ),
+          ];
+
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                //delete message button
+                ...options,
+
+                // cancel button
+
+                ListTile(
+                  leading: Icon(Icons.cancel),
+                  title: Text("Cancel"),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -80,6 +155,15 @@ class _MyPostTileState extends State<MyPostTile> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
+
+                  Spacer(),
+                  //buttons -> more options: delete
+                  GestureDetector(
+                      onTap: _showOption,
+                      child: Icon(
+                        Icons.more_horiz,
+                        color: Theme.of(context).colorScheme.primary,
+                      ))
                 ],
               ),
             ),

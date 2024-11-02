@@ -111,6 +111,14 @@ THEIR DETAILS IN DATABASE TO DISPLAY ON THEIR PROFILE PAGE
   }
 
 //Delete a post
+  Future<void> deletePostFromFirebase(String postId) async {
+    try {
+      await _db.collection("Posts").doc(postId).delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
 //get all the post from firebase
 
   Future<List<Post>> getAllPostFromFirebase() async {
