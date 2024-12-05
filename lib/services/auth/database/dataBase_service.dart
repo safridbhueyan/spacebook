@@ -138,4 +138,43 @@ THEIR DETAILS IN DATABASE TO DISPLAY ON THEIR PROFILE PAGE
     }
   }
 //get individual post
+
+//like a post
+  Future<void> togglelikeInFirebase(String postId) async {
+    try {
+      //get current uid
+      String uid = _auth.currentUser!.uid;
+      //go to doc for this post
+      DocumentReference postDoc = _db.collection("Posts").doc(postId);
+
+      //execute the like
+      await _db.runTransaction((transaction) async {
+        //get post data
+        DocumentSnapshot postSnapshot = await transaction.get(postDoc);
+        //get the list of users who like this post
+        List<String> likedBy = List<String>.from(postSnapshot['likedBy'] ?? []);
+        //get like count
+        int currentLikeCount = postSnapshot['likes'];
+        //if user not liked the post or not --> then like
+        if (!likedBy.contains(uid)) {
+          //add user to like list
+          likedBy.add(uid);
+          //increament the like count
+          currentLikeCount++;
+        }
+        //if the user has already  liked the post -->then unlike
+        else {
+          //remove user from like list
+          likedBy.remove(uid);
+          //decreament the like
+          currentLikeCount--;
+        }
+        //update it in firebase
+        transaction
+            .update(postDoc, {'likes': currentLikeCount, 'likedBy': likedBy});
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 }

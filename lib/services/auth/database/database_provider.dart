@@ -58,6 +58,9 @@ class DatabaseProvider extends ChangeNotifier {
     //update the local data
     _allPosts = allposts;
 
+    //initialize local like data
+    initializeLikeMap();
+
     //update UI
     notifyListeners();
   }
@@ -75,5 +78,70 @@ class DatabaseProvider extends ChangeNotifier {
     await _db.deletePostFromFirebase(postId);
     //reload our data from firebase
     await loadAllPosts();
+  }
+
+  //likes
+//local map to track the like count for each post
+  Map<String, int> _likeCounts = {
+    //for each post id : like count
+  };
+
+//local list to track posts liked by current user
+  List<String> _likedposts = [];
+//Does the current user liked the post?
+  bool isPostLikedByCurrentUser(String postId) => _likedposts.contains(postId);
+//get the like count of the post
+  int getLikeCount(String postID) => _likeCounts[postID]!;
+//initialize like map locally
+  void initializeLikeMap() {
+    //get user current Uid
+    final currentUSerID = _auth.getCurrentUid();
+    //for each post get like data
+    for (var post in _allPosts) {
+      _likeCounts[post.id] = post.likeCount;
+      if (post.likedBy.contains(currentUSerID)) {
+        //add this post id to local list of liked post
+        _likedposts.add(post.id);
+      }
+    }
+  }
+
+//toggle like
+  Future<void> togglelike(String postId) async {
+    /* this first part will update the local value 
+  so that ui feel immidiate and responsive we will update the ui optimistically
+  and revert back if anything goes wrong while writing to the database
+  optimistically pdating the local values like this is important because reading and
+  writing from database take some time (1-2 sec )
+
+*/
+//store original values in case it fails
+    final likedpostOG = _likedposts;
+    final likeCountOG = _likeCounts;
+//perform the like / unlike
+    if (_likedposts.contains(postId)) {
+      _likedposts.remove(postId);
+      _likeCounts[postId] = (_likeCounts[postId] ?? 0) - 1;
+    } else {
+      _likedposts.add(postId);
+      _likeCounts[postId] = (_likeCounts[postId] ?? 0) + 1;
+    }
+//update UI locally
+    notifyListeners();
+//lets update it in our database
+
+//attempt like in database
+    try {
+      await _db.togglelikeInFirebase(postId);
+    }
+
+//revert back to initial state
+    catch (e) {
+      _likedposts = likedpostOG;
+      _likeCounts = likeCountOG;
+
+      //update UI
+      notifyListeners();
+    }
   }
 }
